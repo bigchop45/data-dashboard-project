@@ -1,13 +1,66 @@
-Real-Time Crypto Data DashboardThis project is a comprehensive, real-time cryptocurrency data dashboard. It features a Python backend powered by FastAPI that streams live market data from various sources via WebSockets. The frontend is a dynamic, single-page application built with HTML, Tailwind CSS, and vanilla JavaScript, featuring a customizable grid layout for displaying multiple data feeds simultaneously.FeaturesLive Data Feeds: Real-time updates for prices, trades, liquidations, and funding rates.Multiple Panels: A multi-panel display showing:Regular & Whale-Sized LiquidationsRecent & Large Aggregated TradesLive Prices & 24h ChangeFunding RatesFear & Greed IndexGlobal Trading Session ClockInteractive UI: Draggable and resizable panels powered by GridStack.js.High-Performance Backend: Built with modern, asynchronous Python using FastAPI.Tech StackBackend: Python, FastAPI, Uvicorn, WebSocketsFrontend: HTML, JavaScript, Tailwind CSS, GridStack.jsData Sources: Binance WebSockets, various public APIs (CryptoCompare, etc.)Environment: CondaSetup and Installation1. Clone the Repositorygit clone <your-repository-url>
+# Real-Time Crypto Data Dashboard
+
+This project is a comprehensive, real-time cryptocurrency data dashboard. It features a Python backend powered by FastAPI that streams live market data from various sources via WebSockets. The frontend is a dynamic, single-page application built with HTML, Tailwind CSS, and vanilla JavaScript, featuring a customizable grid layout for displaying multiple data feeds simultaneously.
+
+---
+
+## Features
+
+* **Live Data Feeds:** Real-time updates for prices, trades, liquidations, and funding rates.
+* **Multiple Panels:** A multi-panel display showing:
+    * Regular & Whale-Sized Liquidations
+    * Recent & Large Aggregated Trades
+    * Live Prices & 24h Change
+    * Funding Rates
+    * Fear & Greed Index
+    * Global Trading Session Clock
+* **Interactive UI:** Draggable and resizable panels powered by GridStack.js.
+* **High-Performance Backend:** Built with modern, asynchronous Python using FastAPI.
+
+---
+
+## Tech Stack
+
+* **Backend:** Python, FastAPI, Uvicorn, WebSockets
+* **Frontend:** HTML, JavaScript, Tailwind CSS, GridStack.js
+* **Data Sources:** Binance WebSockets, various public APIs (CryptoCompare, etc.)
+* **Environment:** Conda
+
+---
+
+## Setup and Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repository-url>
 cd data-dashboard-project
+
 2. Create the Conda EnvironmentEnsure you have Anaconda or Miniconda installed. Then, create the environment from the environment.yml file:conda env create -f environment.yml
-3. Set Up Environment VariablesCreate a .env file in the root of the project directory. This file is used to store your secret API keys and is ignored by Git. Add your keys to this file:# Example for CryptoCompare API Key
+
+3. Set Up Environment VariablesCreate a .env file in the root of the project directory. This file is used to store your secret API keys and is ignored by Git. Add your keys to this file:
+# Example for CryptoCompare API Key
 CRYPTOCOMPARE_API_KEY="YOUR_API_KEY_HERE"
-Running the ApplicationActivate the Conda Environment:conda activate data-dashboard
-Start the Backend Server:Run the Uvicorn server from the project's root directory. The --reload flag will automatically restart the server when you make code changes.uvicorn app.main:app --reload
-The API will be running at http://127.0.0.1:8000.Launch the Frontend:Open the frontend.html or dashboard.html file directly in your web browser (e.g., by double-clicking it or using the "Open File" menu in your browser).Adding New Data FeedsThe project is designed to be easily extensible. To add a new live data feed, follow these five steps:Step 1: Create a Connection ManagerFile: app/services/managers.pyAction: Add a new ConnectionManager instance for your new feed.Example:# In app/services/managers.py
+
+Running the Application
+
+Activate the Conda Environment:conda activate data-dashboard
+Start the Backend Server:
+Run the Uvicorn server from the project's root directory. The --reload flag will automatically restart the server when you make code changes.uvicorn app.main:app --reload
+The API will be running at http://127.0.0.1:8000.Launch the Frontend:Open the frontend.html or dashboard.html file directly in your web browser (e.g., by double-clicking it or using the "Open File" menu in your browser).
+
+Adding New Data FeedsThe project is designed to be easily extensible.
+To add a new live data feed, follow these five steps:Step 1: Create a Connection ManagerFile: app/services/managers.pyAction:
+
+Add a newConnectionManager instance for your new feed.
+
+Example:# In app/services/managers.py
 new_feature_manager = ConnectionManager()
-Step 2: Create the Background TaskFile: Create a new file in the app/background_tasks/ directory (e.g., new_feature_feed.py).Action: Write the Python logic to fetch your data in a continuous loop. Import the new manager you created and use await new_feature_manager.broadcast_json(data_packet) to send data to the frontend.Example:# In app/background_tasks/new_feature_feed.py
+
+Step 2: Create the Background TaskFile: Create a new file in the app/background_tasks/ directory (e.g., new_feature_feed.py).Action: Write the Python logic to fetch your data in a continuous loop.
+
+Import the new manager you created and use await new_feature_manager.broadcast_json(data_packet) to send data to the frontend.Example:# In app/background_tasks/new_feature_feed.py
+
 from app.services.managers import new_feature_manager
 
 async def run_new_feature_feed():
