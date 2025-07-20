@@ -1,0 +1,15 @@
+name: data-dashboard
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+    - fastapi==0.111.0
+    - "uvicorn[standard]"
+    - websockets
+    - termcolor
+    - python-dotenv
+    - pytz
+    - pydantic-settings
+    - httpx  # <-- ADD THIS LINE

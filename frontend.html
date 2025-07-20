@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Data Dashboard</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GridStack.js for draggable and resizable widgets -->
+    <link href="https://cdn.jsdelivr.net/npm/gridstack@8.1.1/dist/gridstack.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/gridstack@8.1.1/dist/gridstack-all.js"></script>
+    <!-- Google Fonts for a cleaner look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #27272a; border-radius: 20px; border: 3px solid transparent; }
+        .grid-stack-item-content { background-color: #00000080; border-radius: 0.75rem; border: 1px solid #27272a; display: flex; flex-direction: column; overflow: hidden; }
+        .grid-stack-item-content > header { cursor: move; }
+    </style>
+</head>
+<body class="text-white">
+
+    <div class="grid-stack p-4">
+
+        <!-- New Terminal: BTC/USDT Chart & News -->
+        <div class="grid-stack-item" gs-x="0" gs-y="18" gs-w="12" gs-h="10">
+            <div class="grid-stack-item-content">
+                <header class="p-3 border-b border-gray-800">
+                    <h2 class="text-base font-bold text-white">BTC/USDT Chart & News</h2>
+                </header>
+                <div class="p-1 flex-grow">
+                    <!-- TradingView Widget BEGIN -->
+                    <div class="tradingview-widget-container" style="height:100%; width:100%">
+                      <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px); width:100%"></div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+                      {
+                      "autosize": true,
+                      "symbol": "BINANCE:BTCUSDT",
+                      "interval": "60",
+                      "timezone": "Etc/UTC",
+                      "theme": "dark",
+                      "style": "1",
+                      "locale": "en",
+                      "enable_publishing": false,
+                      "hide_side_toolbar": false,
+                      "allow_symbol_change": true,
+                      "details": true,
+                      "hotlist": true,
+                      "calendar": true,
+                      "show_popup_button": true,
+                      "popup_width": "1000",
+                      "popup_height": "650",
+                      "container_id": "tradingview_btcusdt"
+                    }
+                      </script>
+                    </div>
+                    <!-- TradingView Widget END -->
+                </div>
+            </div>
+        </div>
+
+        <!-- New Terminal: BTC Dominance -->
+        <div class="grid-stack-item" gs-x="8" gs-y="12" gs-w="4" gs-h="6">
+            <div class="grid-stack-item-content">
+                <header class="p-3 border-b border-gray-800">
+                    <h2 class="text-base font-bold text-orange-400">BTC Dominance</h2>
+                </header>
+                <div class="p-1 flex-grow">
+                    <!-- TradingView Widget BEGIN -->
+                    <div class="tradingview-widget-container" style="height:100%; width:100%">
+                      <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px); width:100%"></div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+                      {
+                      "autosize": true,
+                      "symbol": "CRYPTOCAP:BTC.D",
+                      "interval": "D",
+                      "timezone": "Etc/UTC",
+                      "theme": "dark",
+                      "style": "1",
+                      "locale": "en",
+                      "enable_publishing": false,
+                      "hide_side_toolbar": true,
+                      "hide_top_toolbar": true,
+                      "allow_symbol_change": false,
+                      "container_id": "tradingview_btcd"
+                    }
+                      </script>
+                    </div>
+                    <!-- TradingView Widget END -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Existing Terminals -->
+        <div class="grid-stack-item" gs-x="8" gs-y="6" gs-w="4" gs-h="6">
+            <div class="grid-stack-item-content">
+                <header class="p-3 border-b border-gray-800"><h2 class="text-base font-bold text-white">Live Prices & Change</h2><div id="status-price-ticker" class="mt-1 flex items-center space-x-2"><div class="status-dot h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></div><span class="status-text text-xs text-yellow-400">Connecting...</span></div></header>
+                <div class="px-3 pt-2 flex justify-between font-mono text-xs text-gray-400"><span>Symbol</span><div class="flex gap-4"><span class="w-24 text-right">Price</span><span class="w-16 text-right">Change</span></div></div>
+                <div id="feed-price-ticker" class="p-3 pt-1 space-y-2 overflow-y-auto flex-grow custom-scrollbar"></div>
+            </div>
+        </div>
+        <div class="grid-stack-item" gs-x="8" gs-y="18" gs-w="4" gs-h="4">
+            <div class="grid-stack-item-content">
+                <header class="p-3 border-b border-gray-800"><h2 class="text-base font-bold text-rose-400">Fear & Greed Index</h2><div id="status-fear-and-greed" class="mt-1 flex items-center space-x-2"><div class="status-dot h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></div><span class="status-text text-xs text-yellow-400">Connecting...</span></div></header>
+                <div id="feed-fear-and-greed" class="p-3 flex items-center justify-center text-center"></div>
+            </div>
+        </div>
+         <div class="grid-stack-item" gs-x="0" gs-y="12" gs-w="8" gs-h="6">
+            <div class="grid-stack-item-content">
+                <header class="p-3 border-b border-gray-800"><h2 class="text-base font-bold text-blue-400">Trading Sessions</h2><div id="session-clock" class="mt-1 text-xs text-blue-300">Loading...</div></header>
+                <div id="feed-sessions" class="p-3 space-y-2 overflow-y-auto flex-grow custom-scrollbar"></div>
+            </div>
+        </div>
+        <div class="grid-stack-item" gs-x="0" gs-y="0" gs-w="4" gs-h="6"><div class="grid-stack-item-content"><header class="p-3 border-b border-gray-800"><h2 class="text-base font-bold text-yellow-400">Regular Liquidations (>$1k)</h2><div id="status-regular-liquidations" class="mt-1 flex items-center space-x-2"><div class="status-dot h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></div><span class="status-text text-xs text-yellow-400">Connecting...</span></div></header><div id="feed-regular-liquidations" class="p-3 space-y-1.5 overflow-y-auto flex-grow custom-scrollbar"></div></div></div>
+        <div class="grid-stack-item" gs-x="4" gs-y="0" gs-w="4" gs-h="6"><div class="grid-stack-item-content"><header class="p-3 border-b border-gray-800"><h2 class="text-base font-bold text-red-400">Whale Liquidations (>$100k)</h2><div id="status-whale-liquidations" class="mt-1 flex items-center space-x-2"><div class="status-dot h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></div><span class="status-text text-xs text-yellow-400">Connecting...</span></div></header><div id="feed-whale-liquidations" class="p-3 space-y-1.5 overflow-y-auto flex-grow custom-scrollbar"></div></div></div>
+        <div class="grid-stack-item" gs-x="8" gs-y="0" gs-w="4" gs-h="6"><div class="grid-stack-item-content"><header class="p-3 border-b border-gray-800"><h2 class="text-base font-bold text-cyan-400">Funding Rates</h2><div id="status-funding-rates" class="mt-1 flex items-center space-x-2"><div class="status-dot h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></div><span class="status-text text-xs text-yellow-400">Connecting...</span></div></header><div id="feed-funding-rates" class="p-3 space-y-1.5 overflow-y-auto flex-grow custom-scrollbar"></div></div></div>
+        <div class="grid-stack-item" gs-x="0" gs-y="6" gs-w="4" gs-h="6"><div class="grid-stack-item-content"><header class="p-3 border-b border-gray-800"><h2 class="text-base font-bold text-green-400">Recent Trades (>$15k)</h2><div id="status-recent-trades" class="mt-1 flex items-center space-x-2"><div class="status-dot h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></div><span class="status-text text-xs text-yellow-400">Connecting...</span></div></header><div id="feed-recent-trades" class="p-3 space-y-1.5 overflow-y-auto flex-grow custom-scrollbar"></div></div></div>
+        <div class="grid-stack-item" gs-x="4" gs-y="6" gs-w="4" gs-h="6"><div class="grid-stack-item-content"><header class="p-3 border-b border-gray-800"><h2 class="text-base font-bold text-orange-400">Large Agg. Trades (>$500k)</h2><div id="status-recent-trades-halfmil" class="mt-1 flex items-center space-x-2"><div class="status-dot h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></div><span class="status-text text-xs text-yellow-400">Connecting...</span></div></header><div id="feed-recent-trades-halfmil" class="p-3 space-y-1.5 overflow-y-auto flex-grow custom-scrollbar"></div></div></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => GridStack.init({ column: 12, cellHeight: '3.5vh', margin: 15, float: true }));
+
+        const MAX_ITEMS_PER_FEED = 100;
+
+        const sessions=[{name:"Sydney",open:17,close:2,color:"text-purple-400",characteristic:"Kicks off trading day; high AUD activity."},{name:"Tokyo",open:19,close:4,color:"text-pink-400",characteristic:"High liquidity at open; key for JPY pairs."},{name:"London",open:3,close:12,color:"text-red-400",characteristic:"Highest volume and liquidity session."},{name:"New York",open:8,close:17,color:"text-green-400",characteristic:"Dominates market sentiment; USD focus."}],overlaps=[{name:"Tokyo-London Overlap",open:3,close:4,color:"text-orange-400",characteristic:"Brief but important volatility window."},{name:"London-New York Overlap",open:8,close:12,color:"text-yellow-400",characteristic:"Most liquid and volatile period of the day."}],sessionClockElement=document.getElementById("session-clock"),sessionFeedElement=document.getElementById("feed-sessions");function updateSessions(){const e=(new Date).toLocaleString("en-US",{timeZone:"America/New_York"}),t=new Date(e),o=t.getHours();sessionClockElement.textContent=`Current Time (EST/EDT): ${t.toLocaleTimeString()}`;let n="";sessions.forEach(e=>{let t=e.open>e.close?o>=e.open||o<e.close:o>=e.open&&o<e.close;n+=`<div class="p-2 rounded-md flex flex-col gap-1 font-mono text-xs border-l-2 ${t?"border-green-500/50":"border-gray-800"}"><div class="flex justify-between items-center"><span class="font-bold ${e.color}">${e.name}</span><span class="${t?"text-green-400":"text-gray-500"}">${t?"OPEN":"CLOSED"}</span></div><div class="text-gray-400 text-[11px]">${e.characteristic}</div></div>`});let s=!1;overlaps.forEach(e=>{o>=e.open&&o<e.close&&(s||(n+='<hr class="border-gray-700 my-2">',s=!0),n+=`<div class="p-2 rounded-md flex flex-col gap-1 font-mono text-xs border-l-2 border-yellow-500/50 bg-yellow-900/20"><div class="flex justify-between items-center"><span class="font-bold ${e.color}">${e.name}</span><span class="text-yellow-300 animate-pulse">ACTIVE</span></div><div class="text-gray-300 text-[11px]">${e.characteristic}</div></div>`)}),sessionFeedElement.innerHTML=n}setInterval(updateSessions,1e3),updateSessions();
+        
+        function setupWebSocket(feedId, endpoint) {
+            const container = document.getElementById(`feed-${feedId}`);
+            if (!container) return;
+            const statusIndicator = document.getElementById(`status-${feedId}`);
+            const statusDot = statusIndicator.querySelector('.status-dot');
+            const statusText = statusIndicator.querySelector('.status-text');
+            const wsUrl = `ws://127.0.0.1:8000/ws/${endpoint}`;
+
+            function connect() {
+                const ws = new WebSocket(wsUrl);
+                ws.onopen = () => { statusDot.className = 'status-dot h-2.5 w-2.5 rounded-full bg-green-500'; statusText.textContent = "Connected"; statusText.className = 'status-text text-xs text-green-400'; };
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    const item = createFeedItem(feedId, data);
+                    if (item) {
+                        if (['price-ticker'].includes(feedId)) {
+                            const existing = document.getElementById(`${feedId}-${data.symbol}`);
+                            if (existing) { existing.innerHTML = item.innerHTML; } else { item.id = `${feedId}-${data.symbol}`; container.appendChild(item); }
+                        } else if (feedId === 'fear-and-greed') {
+                            container.innerHTML = item.innerHTML;
+                        } else {
+                            container.prepend(item);
+                            if (container.children.length > MAX_ITEMS_PER_FEED) container.removeChild(container.lastChild);
+                        }
+                    }
+                };
+                ws.onclose = () => { statusDot.className = 'status-dot h-2.5 w-2.5 rounded-full bg-red-500 animate-pulse'; statusText.textContent = "Disconnected"; statusText.className = 'status-text text-xs text-red-400'; setTimeout(connect, 3000); };
+                ws.onerror = (error) => ws.close();
+            }
+            connect();
+        }
+
+        function createFeedItem(feedId, data) {
+            const item = document.createElement('div');
+            item.className = 'fade-in p-2 rounded-md flex items-center justify-between gap-4 font-mono text-xs';
+            let isSell = data.side === 'SELL';
+
+            switch (feedId) {
+                case 'price-ticker':
+                    const isUp = data.change_percent >= 0;
+                    item.innerHTML = `<div class="flex items-center gap-3"><span class="font-bold text-white">${data.symbol}</span></div><div class="flex items-center gap-3"><span class="font-semibold text-gray-200 w-24 text-right">${formatCurrency(data.price, true)}</span><span class="font-semibold w-16 text-right ${isUp ? 'text-green-400' : 'text-red-400'}">${isUp ? '+' : ''}${data.change_percent.toFixed(2)}%</span></div>`;
+                    break;
+                case 'fear-and-greed':
+                    item.className = 'flex flex-col items-center justify-center h-full';
+                    item.innerHTML = `<div class="text-5xl font-bold">${data.value}</div><div class="text-lg text-gray-300 mt-2">${data.classification}</div>`;
+                    break;
+                case 'regular-liquidations':
+                case 'whale-liquidations':
+                    item.classList.add(isSell ? 'bg-red-900/40' : 'bg-green-900/40');
+                    item.innerHTML = `<div class="flex items-center gap-3"><span class="font-bold ${isSell ? 'text-red-400' : 'text-green-400'}">${isSell ? 'LONG' : 'SHORT'}</span><span class="text-white">${data.symbol}</span></div><span class="font-semibold text-white">${formatCurrency(data.usd_size)}</span>`;
+                    break;
+                case 'funding-rates':
+                    let isPositive = data.daily_rate_percent > 0;
+                    item.classList.add(isPositive ? 'bg-yellow-900/40' : 'bg-blue-900/40');
+                    item.innerHTML = `<div class="flex items-center gap-3"><span class="text-white">${data.symbol}</span></div><span class="font-semibold ${isPositive ? 'text-yellow-300' : 'text-blue-300'}">${data.daily_rate_percent.toFixed(4)}%</span>`;
+                    break;
+                case 'recent-trades':
+                    item.classList.add(isSell ? 'bg-red-900/20' : 'bg-green-900/20');
+                    item.innerHTML = `<div class="flex items-center gap-3"><span class="font-bold ${isSell ? 'text-red-500' : 'text-green-500'}">${data.side}</span><span class="text-gray-300">${data.symbol}</span></div><span class="font-semibold text-gray-200">${formatCurrency(data.usd_size)}</span>`;
+                    break;
+                case 'recent-trades-halfmil':
+                    item.classList.add(isSell ? 'bg-purple-900/40' : 'bg-blue-900/40');
+                    item.innerHTML = `<div class="flex items-center gap-3"><span class="font-bold ${isSell ? 'text-purple-400' : 'text-blue-400'}">${data.side}</span><span class="text-white">${data.symbol}</span></div><span class="font-semibold text-white">${formatCurrency(data.usd_size)}</span>`;
+                    break;
+            }
+            return item;
+        }
+        
+        function formatCurrency(e,t=!1){const o={style:"currency",currency:"USD"};return t?(o.minimumFractionDigits=2,o.maximumFractionDigits=2):(o.minimumFractionDigits=0,o.maximumFractionDigits=0),new Intl.NumberFormat("en-US",o).format(e)}
+        
+        setupWebSocket('regular-liquidations', 'regular-liquidations');
+        setupWebSocket('whale-liquidations', 'whale-liquidations');
+        setupWebSocket('funding-rates', 'funding-rates');
+        setupWebSocket('recent-trades', 'recent-trades');
+        setupWebSocket('recent-trades-halfmil', 'recent-trades-halfmil');
+        setupWebSocket('price-ticker', 'price-ticker');
+        setupWebSocket('fear-and-greed', 'fear-and-greed');
+    </script>
+</body>
+</html>
